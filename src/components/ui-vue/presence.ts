@@ -1,4 +1,4 @@
-import { computed, toValue, type MaybeRefOrGetter } from "vue";
+import { computed, toValue, type ComponentPublicInstance, type MaybeRefOrGetter } from "vue";
 import { useMachine, normalizeProps } from "@zag-js/vue";
 import * as presence from "@zag-js/presence";
 
@@ -19,7 +19,7 @@ function usePresence(open: MaybeRefOrGetter<boolean>) {
 
   return {
     present: computed(() => api.value.present),
-    setNode: (node: HTMLElement | null) => api.value.setNode(node),
+    setNode: (node: Element | ComponentPublicInstance | null) => api.value.setNode(node as HTMLElement | null),
   };
 }
 
