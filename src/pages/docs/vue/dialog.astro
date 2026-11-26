@@ -139,7 +139,7 @@ const framePaths = parsePaths(
         :hidden="!content.present.value"
         :class="
           twMerge([
-            \`outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14\`,
+            \`outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] flex-col translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14\`,
             \`[&[data-state='open']]:animate-in [&[data-state='open']]:fade-in-0 [&[data-state='open']]:zoom-in-80 [&[data-state='open']]:duration-250\`,
             \`[&[data-state='closed']]:animate-out [&[data-state='closed']]:fade-out-0 [&[data-state='closed']]:zoom-out-80 [&[data-state='closed']]:duration-400\`,
             '[--color-frame-1-stroke:var(--color-primary)]/50',
@@ -225,6 +225,29 @@ const api = injectedApi;
 </template>
 `;
 
+const bodySource = `
+<script setup lang="ts">
+import { twMerge } from "tailwind-merge";
+
+const { class: className } = defineProps<{ class?: string }>();
+</script>
+
+<template>
+  <div class="mt-4 flex min-h-0 flex-col border-y border-primary/30 bg-background/25">
+    <div
+      :class="
+        twMerge([
+          'flex min-h-0 flex-col gap-4 overflow-y-auto py-5 [mask-image:linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]',
+          className,
+        ])
+      "
+    >
+      <slot />
+    </div>
+  </div>
+</template>
+`;
+
 const closeTriggerSource = `
 <script setup lang="ts">
 import { inject, useSlots } from "vue";
@@ -273,6 +296,7 @@ export { default as DialogTrigger } from "./DialogTrigger.vue";
 export { default as DialogContent } from "./DialogContent.vue";
 export { default as DialogTitle } from "./DialogTitle.vue";
 export { default as DialogDescription } from "./DialogDescription.vue";
+export { default as DialogBody } from "./DialogBody.vue";
 export { default as DialogCloseTrigger } from "./DialogCloseTrigger.vue";
 `;
 
@@ -283,6 +307,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogCloseTrigger,
 } from "@/components/ui/dialog";
 `;
@@ -293,6 +318,23 @@ const usageExample = `
   <DialogContent>
     <DialogTitle>Edit Profile</DialogTitle>
     <DialogDescription>Make changes to your profile.</DialogDescription>
+    <DialogCloseTrigger />
+  </DialogContent>
+</DialogRoot>
+`;
+
+const usageLongExample = `
+<DialogRoot>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogTitle>Create Package</DialogTitle>
+    <DialogDescription>Pick a version for every module.</DialogDescription>
+    <DialogBody>
+      <Input v-for="module in modules" :key="module" :placeholder="module" />
+    </DialogBody>
+    <div class="flex justify-end gap-3 mt-3 pb-2">
+      <Button class="min-w-30">Queue</Button>
+    </div>
     <DialogCloseTrigger />
   </DialogContent>
 </DialogRoot>
@@ -343,6 +385,7 @@ const usageExample = `
       <PreviewCode title="components/ui/dialog/DialogContent.vue" code={contentSource} />
       <PreviewCode title="components/ui/dialog/DialogTitle.vue" code={titleSource} />
       <PreviewCode title="components/ui/dialog/DialogDescription.vue" code={descriptionSource} />
+      <PreviewCode title="components/ui/dialog/DialogBody.vue" code={bodySource} />
       <PreviewCode title="components/ui/dialog/DialogCloseTrigger.vue" code={closeTriggerSource} />
       <PreviewCode title="components/ui/dialog/index.ts" code={indexSource} />
       <SectionContent>Update the import paths to match your project setup.</SectionContent>
@@ -351,6 +394,15 @@ const usageExample = `
       <SectionTitle>Usage</SectionTitle>
       <PreviewCode code={usageImports} />
       <PreviewCode code={usageExample} />
+      <SectionContent>
+        <span class="bg-foreground/15 px-1.5 py-px rounded-md">DialogContent</span>
+        is capped at the viewport height. When the content can grow taller
+        than the screen (long forms, lists), wrap it in
+        <span class="bg-foreground/15 px-1.5 py-px rounded-md">DialogBody</span>:
+        it scrolls on its own while the title, description and actions stay
+        in view, with a hairline above and below and a fade at its edges.
+      </SectionContent>
+      <PreviewCode code={usageLongExample} />
     </div>
   </Wrapper>
   <TocMenu>
