@@ -109,7 +109,7 @@ function DialogContent({
           ref={content.ref}
           hidden={!content.present}
           className={twMerge([
-            "outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14",
+            "outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] flex-col translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14",
             "[&[data-state='open']]:animate-in [&[data-state='open']]:fade-in-0 [&[data-state='open']]:zoom-in-80 [&[data-state='open']]:duration-250",
             "[&[data-state='closed']]:animate-out [&[data-state='closed']]:fade-out-0 [&[data-state='closed']]:zoom-out-80 [&[data-state='closed']]:duration-400",
             "[--color-frame-1-stroke:var(--color-primary)]/50",
@@ -177,6 +177,24 @@ function DialogDescription({
   );
 }
 
+function DialogBody({
+  children,
+  className,
+}: React.PropsWithChildren<{ className?: string }>) {
+  return (
+    <div className="mt-4 flex min-h-0 flex-col border-y border-primary/30 bg-background/25">
+      <div
+        className={twMerge([
+          "flex min-h-0 flex-col gap-4 overflow-y-auto py-5 [mask-image:linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]",
+          className,
+        ])}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function DialogCloseTrigger({
   children,
   className,
@@ -218,6 +236,7 @@ export {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogCloseTrigger,
 };
 `;
@@ -229,6 +248,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogCloseTrigger,
 } from "@/components/ui/dialog";
 `;
@@ -259,6 +279,25 @@ const usageExample = `
         <Save className="size-4 me-2.5" />
         Save changes
       </Button>
+    </div>
+    <DialogCloseTrigger />
+  </DialogContent>
+</DialogRoot>
+`;
+
+const usageLongExample = `
+<DialogRoot>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogTitle>Create Package</DialogTitle>
+    <DialogDescription>Pick a version for every module.</DialogDescription>
+    <DialogBody>
+      {modules.map((module) => (
+        <Input key={module} placeholder={module} />
+      ))}
+    </DialogBody>
+    <div className="flex justify-end gap-3 mt-3 pb-2">
+      <Button className="min-w-30">Queue</Button>
     </div>
     <DialogCloseTrigger />
   </DialogContent>
@@ -307,6 +346,15 @@ const usageExample = `
       <SectionTitle>Usage</SectionTitle>
       <PreviewCode code={usageImports} />
       <PreviewCode code={usageExample} />
+      <SectionContent>
+        <span class="bg-foreground/15 px-1.5 py-px rounded-md">DialogContent</span>
+        is capped at the viewport height. When the content can grow taller
+        than the screen (long forms, lists), wrap it in
+        <span class="bg-foreground/15 px-1.5 py-px rounded-md">DialogBody</span>:
+        it scrolls on its own while the title, description and actions stay
+        in view, with a hairline above and below and a fade at its edges.
+      </SectionContent>
+      <PreviewCode code={usageLongExample} />
     </div>
   </Wrapper>
   <TocMenu>

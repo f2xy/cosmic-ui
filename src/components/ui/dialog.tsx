@@ -61,7 +61,7 @@ function DialogContent({
           ref={content.ref}
           hidden={!content.present}
           className={twMerge([
-            "outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14",
+            "outline-none backdrop-blur-sm fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] flex-col translate-x-[-50%] translate-y-[-50%] sm:max-w-lg pb-14 pt-11 px-14",
             "[&[data-state='open']]:animate-in [&[data-state='open']]:fade-in-0 [&[data-state='open']]:zoom-in-80 [&[data-state='open']]:duration-250",
             "[&[data-state='closed']]:animate-out [&[data-state='closed']]:fade-out-0 [&[data-state='closed']]:zoom-out-80 [&[data-state='closed']]:duration-400",
             "[--color-frame-1-stroke:var(--color-primary)]/50",
@@ -129,6 +129,24 @@ function DialogDescription({
   );
 }
 
+function DialogBody({
+  children,
+  className,
+}: React.PropsWithChildren<{ className?: string }>) {
+  return (
+    <div className="mt-4 flex min-h-0 flex-col border-y border-primary/30 bg-background/25">
+      <div
+        className={twMerge([
+          "flex min-h-0 flex-col gap-4 overflow-y-auto py-5 [mask-image:linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]",
+          className,
+        ])}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function DialogCloseTrigger({
   children,
   className,
@@ -170,5 +188,6 @@ export {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogBody,
   DialogCloseTrigger,
 };
